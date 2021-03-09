@@ -753,6 +753,19 @@ section {
   
 }
 
+@media (max-width: 350px)
+{
+  .services .icon-box .card-img-top {
+    /* background-color: red; */
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    margin-left: 0px;
+  }
+  
+}
+
+
 
 
 
