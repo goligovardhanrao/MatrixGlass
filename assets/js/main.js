@@ -135,6 +135,24 @@
     return false;
   });
 
+
+    // Whatapp
+
+    $(window).scroll(function() {
+      if ($(this).scrollTop() > 100) {
+        $('.whatapp').fadeIn('slow');
+      } else {
+        $('.whatapp').fadeOut('slow');
+      }
+    });
+  
+    // $('.whatapp').click(function() {
+    //   $('html, body').animate({
+    //     scrollTop: 0
+    //   }, 1500, 'easeInOutExpo');
+    //   return false;
+    // });
+  
   // Porfolio isotope and filter
   $(window).on('load', function() {
     var portfolioIsotope = $('.portfolio-container').isotope({
