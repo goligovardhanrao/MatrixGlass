@@ -1,41 +1,74 @@
 <?php
-  /**
-  * Requires the "PHP Email Form" library
-  * The "PHP Email Form" library is available only in the pro version of the template
-  * The library should be uploaded to: vendor/php-email-form/php-email-form.php
-  * For more info and help: https://bootstrapmade.com/php-email-form/
-  */
 
-  // Replace contact@example.com with your real receiving email address
-  $receiving_email_address = 'contact@example.com';
+// Replace this with your own email address
+//$siteOwnersEmail = 'matrixtuff@gmail.com';
+$siteOwnersEmail = 'nagavenkat.1996@gmail.com';
 
-  if( file_exists($php_email_form = '../assets/vendor/php-email-form/php-email-form.php' )) {
-    include( $php_email_form );
-  } else {
-    die( 'Unable to load the "PHP Email Form" Library!');
-  }
 
-  $contact = new PHP_Email_Form;
-  $contact->ajax = true;
-  
-  $contact->to = $receiving_email_address;
-  $contact->from_name = $_POST['name'];
-  $contact->from_email = $_POST['email'];
-  $contact->subject = $_POST['subject'];
+if($_POST) {
 
-  // Uncomment below code if you want to use SMTP to send emails. You need to enter your correct SMTP credentials
-  /*
-  $contact->smtp = array(
-    'host' => 'example.com',
-    'username' => 'example',
-    'password' => 'pass',
-    'port' => '587'
-  );
-  */
+    $name = trim(stripslashes($_POST['name']));
+    $email = trim(stripslashes($_POST['email']));
+    $contact_message = trim(stripslashes($_POST['message']));
 
-  $contact->add_message( $_POST['name'], 'From');
-  $contact->add_message( $_POST['email'], 'Email');
-  $contact->add_message( $_POST['message'], 'Message', 10);
+    // Check Name
+    if (strlen($name) < 2) {
+        $error['name'] = "Please enter your name.";
+    }
 
-  echo $contact->send();
+
+    // Check Email
+    if (!preg_match('/^[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*+[a-z]{2}/is', $email)) {
+        $error['email'] = "Please enter a valid email address.";
+    }
+    // Check Message
+    if (strlen($contact_message) < 10) {
+        $error['message'] = "Please enter your message. It should have at least 10 characters.";
+    }
+
+
+    $subject = trim(stripslashes($_POST['subject']));
+
+
+    // Set Message
+    $message .= "Email from: " . $name . "<br />";
+    $message .= "Email address: " . $email . "<br />";
+
+    $message .= "Message: <br />";
+    $message .= $contact_message;
+    $message .= "<br /> ----- <br /> This email was sent from your site's contact form. <br />";
+
+    // Set From: header
+    $from =  $name . " <" . $email . ">";
+
+    // Email Headers
+    $headers = "From: " . $from . "\r\n";
+    $headers .= "Reply-To: ". $email . "\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "CC: pramaanmarketing@gmail.com\r\n";
+    $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+
+
+    if (!$error) {
+
+        ini_set("sendmail_from", $siteOwnersEmail); // for windows server
+        $mail = mail($siteOwnersEmail, $subject, $message, $headers);
+
+        if ($mail) { echo "OK"; }
+        else { echo "Something went wrong. Please try again."; }
+        
+    } # end if - no validation error
+
+    else {
+
+        $response = (isset($error['name'])) ? $error['name'] . "<br /> \n" : null;
+        $response .= (isset($error['email'])) ? $error['email'] . "<br /> \n" : null;
+        $response .= (isset($error['message'])) ? $error['message'] . "<br />" : null;
+        
+        echo $response;
+
+    } # end if - there was a validation error
+
+}
+
 ?>
